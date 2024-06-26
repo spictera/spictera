@@ -1,7 +1,7 @@
 Sample code to get GEO location data from Linux and Windows services
 
 ```
-$ sudo apt install libgeoclue-2-dev libgeoclue-2-0 libdbus-1-dev make gcc
+$ sudo apt install libgeoclue-2-dev libgeoclue-2-0 libdbus-1-dev libglib2.0-dev make gcc
 $ make
 $ getlocation
 ```
