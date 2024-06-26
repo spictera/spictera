@@ -16,6 +16,8 @@ whitelist=spictera
 allowed=true
 system=true
 users=
+
+url=https://www.googleapis.com/geolocation/v1/geolocate?key=YOURKEY
 ```
 
 Restart service
