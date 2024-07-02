@@ -2,6 +2,11 @@
 #include <stdio.h>
 #include <glib/gi18n.h>
 #include <geoclue.h>
+#include <unistd.h>
+#include <pthread.h>
+#include <sys/wait.h>
+#include <signal.h>
+
 
 /* Commandline options */
 static gint timeout = 30; /* seconds */
@@ -11,6 +16,7 @@ static gint time_threshold;
 GClueSimple *simple = NULL;
 GClueClient *client = NULL;
 GMainLoop *main_loop;
+pid_t agent_pid = 0;
 
 static gboolean on_location_timeout(gpointer user_data)
 {
@@ -39,8 +45,8 @@ static void print_location(GClueSimple *simple)
         printf("%s():gclue_simple_get_location()\n",__FUNCTION__);
 	location = gclue_simple_get_location (simple);
 
-        printf("%s():Lattitude: %f°\n", __FUNCTION__, gclue_location_get_latitude (location));
-        printf("%s():Lattitude: %f°\n", __FUNCTION__, gclue_location_get_longitude (location));
+        printf("%s():Latitude: %f°\n", __FUNCTION__, gclue_location_get_latitude (location));
+        printf("%s():Longitude: %f°\n", __FUNCTION__, gclue_location_get_longitude (location));
 	printf("%s():Accuracy: %f meters\n", __FUNCTION__,gclue_location_get_accuracy (location));
 
         printf("%s():gclue_simple_get_altitude()\n",__FUNCTION__);
@@ -152,8 +158,82 @@ int getlocation(void)
 	return EXIT_SUCCESS;
 }
 
-int main(void)
-{
-	int rc = getlocation();
-	return rc;
+// Function to run the agent program
+void* run_agent(void* arg) {
+    const char *agent_path = "/usr/libexec/geoclue-2.0/demos/agent";
+
+    // Check if the agent program exists and is executable
+    if (access(agent_path, X_OK) != 0) {
+        perror("Error: agent program not found or not executable");
+        pthread_exit((void*)1);
+    }
+
+    // Execute the agent program in the background
+    agent_pid = fork();
+    if (agent_pid == 0) {
+        // Child process
+        execl(agent_path, agent_path, (char*)NULL);
+        perror("Error executing agent program");
+        exit(1);
+    } else if (agent_pid < 0) {
+        // Fork failed
+        perror("Error forking process for agent program");
+        pthread_exit((void*)1);
+    }
+
+    // Parent process
+    printf("Agent program started with PID %d.\n", agent_pid);
+    pthread_exit((void*)0);
 }
+
+// Function to run the getlocation function
+void* run_getlocation(void* arg) {
+    // Assuming getlocation is defined somewhere else
+    extern int getlocation();
+    sleep(1); // Delay for 1 second after agent starts
+    int rc = getlocation();
+    pthread_exit((void*)(long)rc);
+}
+
+int main() {
+    pthread_t agent_thread, getlocation_thread;
+    void *agent_status, *getlocation_status;
+
+    // Create the agent thread
+    if (pthread_create(&agent_thread, NULL, run_agent, NULL) != 0) {
+        perror("Error creating agent thread");
+        return 1;
+    }
+
+    // Create the getlocation thread
+    if (pthread_create(&getlocation_thread, NULL, run_getlocation, NULL) != 0) {
+        perror("Error creating getlocation thread");
+        return 1;
+    }
+
+    // Wait for the getlocation thread to finish
+    if (pthread_join(getlocation_thread, &getlocation_status) != 0) {
+        perror("Error joining getlocation thread");
+        return 1;
+    }
+
+    // Check the return status of getlocation
+    if ((long)getlocation_status != 0) {
+        fprintf(stderr, "Getlocation thread returned with status %ld\n", (long)getlocation_status);
+    } else {
+        printf("Getlocation thread executed successfully.\n");
+    }
+    
+     // Terminate the agent process
+    if (agent_pid > 0) {
+        if (kill(agent_pid, SIGTERM) == 0) {
+            printf("Agent program (PID %d) terminated successfully.\n", agent_pid);
+        } else {
+            perror("Error terminating agent program");
+        }
+    }
+
+
+    return 0;
+}
+
