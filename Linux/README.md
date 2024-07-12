@@ -5,7 +5,39 @@ $ sudo apt install libgeoclue-2-dev libgeoclue-2-0 libdbus-1-dev libglib2.0-dev 
 $ make
 $ getlocation
 ```
+```
+sudo apt install meson
+sudo apt install modemmanager-dev
+sudo apt install libavahi-client-dev
+sudo apt install libavahi-glib-dev
+sudo apt install libnotify-dev
 
+sudo apt install libjson-glib-dev
+sudo apt install libsoup-3.0-dev
+sudo apt install libmm-glib-dev
+sudo apt install libgirepository1.0-dev
+sudo apt install valac
+sudo apt install gettext
+sudo apt install gtk-doc-tools
+
+meson --prefix=/usr --sysconfdir/etc -Ddbus-srv-user=geoclue build
+
+ninja -C build
+sudo ninja -C build install
+```
+
+```
+cat /etc/passwd | grep "geoclue"
+sudo chsh geoclue -s /bun/bash
+```
+```
+copy .conf file /etc/geoclue/geoclue.conf
+sudo cp geoclue.conf ...
+```
+```
+sudo systemctl restart geoclue
+sudo systemctl daemon-reload
+```
 Add spictera to whitelist in geoclue.conf
 
 ```
