@@ -15,7 +15,7 @@ sudo apt install valac
 sudo apt install gettext
 sudo apt install gtk-doc-tools
 
-/geoclue
+cd geoclue
 meson --prefix=/usr --sysconfdir /etc -Ddbus-srv-user=geoclue build
 
 ninja -C build
@@ -27,17 +27,17 @@ cat /etc/passwd | grep "geoclue"
 sudo chsh geoclue -s /bin/bash
 ```
 ```
-copy geoclue/config/ .conf file /etc/geoclue/geoclue.conf
-sudo cp geoclue.conf ...
+sudo cp config/geoclue.conf /etc/geoclue/geoclue.conf
 ```
 ```
 sudo systemctl restart geoclue
 sudo systemctl daemon-reload
 ```
 ```
-$ sudo apt install libgeoclue-2-dev libgeoclue-2-0 libdbus-1-dev libglib2.0-dev make gcc
-$ make
-$ getlocation
+# sudo apt install libgeoclue-2-dev libgeoclue-2-0 libdbus-1-dev libglib2.0-dev make gcc
+cd ..
+make
+./getlocation(sudo ./getlocation)
 ```
 <!---
 spictera/spictera is a ✨ special ✨ repository because its `README.md` (this file) appears on your GitHub profile.
