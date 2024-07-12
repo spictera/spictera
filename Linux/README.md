@@ -23,7 +23,7 @@ sudo ninja -C build install
 
 ```
 cat /etc/passwd | grep "geoclue"
-sudo chsh geoclue -s /bun/bash
+sudo chsh geoclue -s /bin/bash
 ```
 ```
 copy geoclue/config/ .conf file /etc/geoclue/geoclue.conf
