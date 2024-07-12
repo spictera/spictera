@@ -160,7 +160,7 @@ int getlocation(void)
 
 // Function to run the agent program
 void* run_agent(void* arg) {
-    const char *agent_path = "/usr/libexec/geoclue-2.0/demos/agent";
+    const char *agent_path = "geoclue/build/demo/agent";
 
     // Check if the agent program exists and is executable
     if (access(agent_path, X_OK) != 0) {
