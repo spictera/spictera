@@ -25,7 +25,6 @@ if get_option('libgeoclue')
                     po_dir: '../po',
                     install: true,
                     install_dir: desktop_dir)
-    
 endif
 
 if get_option('demo-agent')
