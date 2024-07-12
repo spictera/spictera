@@ -15,6 +15,7 @@ sudo apt install valac
 sudo apt install gettext
 sudo apt install gtk-doc-tools
 
+/geoclue
 meson --prefix=/usr --sysconfdir /etc -Ddbus-srv-user=geoclue build
 
 ninja -C build
