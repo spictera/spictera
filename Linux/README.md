@@ -15,7 +15,7 @@ sudo apt install valac
 sudo apt install gettext
 sudo apt install gtk-doc-tools
 
-meson --prefix=/usr --sysconfdir/etc -Ddbus-srv-user=geoclue build
+meson --prefix=/usr --sysconfdir /etc -Ddbus-srv-user=geoclue build
 
 ninja -C build
 sudo ninja -C build install
